@@ -45,45 +45,5 @@ public class Zuozuo66ManagementApplication {
     @Bean  
     public JedisConnectionFactory connectionFactory() {  
             return new JedisConnectionFactory();  
-    }  
-    
-//    public final static String TOPIC = "topic";
-//    public final static String QUEUE = "queue";
-//    @Bean
-//    public Queue queue() {
-//        return new ActiveMQQueue(QUEUE);
-//    }
-//
-//    @Bean
-//    public Topic topic() {
-//        return new ActiveMQTopic(TOPIC);
-//    }
-//
-//    // topic模式的ListenerContainer
-//    @Bean
-//    public JmsListenerContainerFactory<?> jmsListenerContainerTopic(ConnectionFactory activeMQConnectionFactory) {
-//        DefaultJmsListenerContainerFactory bean = new DefaultJmsListenerContainerFactory();
-//        bean.setPubSubDomain(true);
-//        bean.setConnectionFactory(activeMQConnectionFactory);
-//        return bean;
-//    }
-//    // queue模式的ListenerContainer
-//    @Bean
-//    public JmsListenerContainerFactory<?> jmsListenerContainerQueue(ConnectionFactory activeMQConnectionFactory) {
-//        DefaultJmsListenerContainerFactory bean = new DefaultJmsListenerContainerFactory();
-//        bean.setConnectionFactory(activeMQConnectionFactory);
-//        return bean;
-//    }
-//	
-//	@Bean  
-//    public CorsFilter corsFilter() {  
-//        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();  
-//        final CorsConfiguration config = new CorsConfiguration();  
-//        config.setAllowCredentials(true);  
-//        config.addAllowedOrigin("*");  
-//        config.addAllowedHeader("*");  
-//        config.addAllowedMethod("*");  
-//        source.registerCorsConfiguration("*//**", config);  
-//        return new CorsFilter(source);  
-//    }  
+    }   
 }

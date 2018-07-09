@@ -20,13 +20,27 @@ public class ExampleController {
 	private JmsTemplate jmsTemplate;
 	
 	@Value(value="${spring.activemq.queue.name}")
-	private String destinationName;
+	private String queueName;
 	
-	@PostMapping("/producer")
+	@Value(value="${spring.activemq.topic.name}")
+	private String topicName;
+	
+	@PostMapping("/jms/queue")
 	@ApiOperation(value="消息队列用例")
-	public CommonResult<Integer> messageQueueExample(String msg){
+	public CommonResult<Integer> queueExample(String msg){
 		try {
-			jmsTemplate.convertAndSend(destinationName, msg);
+			jmsTemplate.convertAndSend(queueName, msg);
+		} catch (Exception e) {
+			return new CommonResult<Integer>(0);
+		}
+		return new CommonResult<Integer>(1);
+	}
+	
+	@PostMapping("/jms/topic")
+	@ApiOperation(value="发布-订阅消息用例")
+	public CommonResult<Integer> topicExample(String msg){
+		try {
+			jmsTemplate.convertAndSend(topicName, msg);
 		} catch (Exception e) {
 			return new CommonResult<Integer>(0);
 		}
