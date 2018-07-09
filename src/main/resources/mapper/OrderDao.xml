@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zuozuo66.management.dao.OrderDao" >
+	<insert id="createOrder">
+		INSERT INTO s_order (
+			user_id,
+			product_id,
+			order_investment,
+			order_multiple,
+			order_content,
+			creation_date,
+			create_by,
+			update_date,
+			update_by
+		)
+		VALUES(
+			#{user.userId,jdbcType=NUMERIC},
+			#{product.productId,jdbcType=NUMERIC},
+			#{orderInvestment,jdbcType=NUMERIC},
+			#{orderMultiple,jdbcType=NUMERIC},
+			#{orderContent,jdbcType=VARCHAR},
+			NOW(),
+			#{createBy,jdbcType=NUMERIC},
+			NOW(),
+			#{createBy,jdbcType=NUMERIC}
+		)
+	</insert>
+	
+	<insert id="createOrderList">
+		INSERT INTO s_order (
+			user_id,
+			product_id,
+			order_investment,
+			order_multiple,
+			order_content,
+			creation_date,
+			create_by,
+			update_date,
+			update_by
+		)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+        (	#{item.user.userId,jdbcType=NUMERIC},
+			#{item.product.productId,jdbcType=NUMERIC},
+			#{item.orderInvestment,jdbcType=NUMERIC},
+			#{item.orderMultiple,jdbcType=NUMERIC},
+			#{item.orderContent,jdbcType=VARCHAR},
+			NOW(),
+			#{item.createBy,jdbcType=NUMERIC},
+			NOW(),
+			#{item.createBy,jdbcType=NUMERIC}
+		)
+		</foreach>
+	</insert>
+	
+	<update id="updateorder">
+		UPDATE s_order s
+		SET s.order_balance = #{orderBalance,jdbcType=NUMERIC},
+			s.update_by = #{updateBy,jdbcType=NUMERIC},
+			s.update_date = now()
+		WHERE s.order_id = #{orderId,jdbcType=NUMERIC};
+	</update>
+	
+	<update id="updateorderList">
+		BEGIN
+		<foreach collection="list" item="item" separator=";">
+			UPDATE s_order s
+			SET s.order_balance = #{item.orderBalance,jdbcType=NUMERIC},
+				s.update_by = #{item.updateBy,jdbcType=NUMERIC},
+				s.update_date = now()
+			WHERE s.order_id = #{item.orderId,jdbcType=NUMERIC}
+		</foreach>
+		END;
+	</update>
+	
+	<delete id="delorderByUserId">
+		DELETE FROM s_order 
+		WHERE user_id = #{userId,jdbcType=NUMERIC}
+	</delete>
+	
+	<delete id="delorderListByUserIds">
+		DELETE FROM s_order 
+		WHERE user_id IN
+		<foreach collection="list" open="(" separator="," close=")">
+		 	#{item,jdbcType=NUMERIC}
+		</foreach>
+	</delete>
+	
+	<select id="findorderListByUserIds">
+		SELECT 
+			a.order_id AS orderId,
+			a.order_balance AS orderBalance,
+			a.user_id AS userId,
+			a.creation_date AS creationDate,
+			a.create_by AS createBy,
+			a.update_date AS updateDate,
+			a.update_by AS updateBy
+		 FROM  s_order a 
+		WHERE a.user_id IN 
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			{item,jdbcType=NUMERIC}
+		</foreach>
+	</select>
+	
+	<select id="findorderListByUserIdsCount">
+		SELECT count(1)
+		 FROM  s_order a 
+		WHERE a.user_id IN 
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			{item,jdbcType=NUMERIC}
+		</foreach>
+	</select>
+
+</mapper>

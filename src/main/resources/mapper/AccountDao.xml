@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zuozuo66.management.dao.AccountDao" >
+	<insert id="createAccount">
+		INSERT INTO s_account (
+			user_id,
+			account_balance,
+			creation_date,
+			create_by,
+			update_date,
+			update_by
+		)
+		VALUES(
+			#{userId,jdbcType=NUMERIC},
+			0.00,
+			NOW(),
+			999999,
+			NOW(),
+			999999
+		)
+	</insert>
+	
+	<insert id="createAccountList">
+			INSERT INTO s_account (
+			user_id,
+			account_balance,
+			creation_date,
+			create_by,
+			update_date,
+			update_by
+		)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+		(	#{item.userId,jdbcType=NUMERIC},
+			0.00,
+			NOW(),
+			999999,
+			NOW(),
+			999999
+		)
+		</foreach>
+	</insert>
+	
+	<update id="updateAccount">
+		UPDATE s_account s
+		SET s.account_balance = #{accountBalance,jdbcType=NUMERIC},
+			s.update_by = #{updateBy,jdbcType=NUMERIC},
+			s.update_date = now()
+		WHERE s.account_id = #{accountId,jdbcType=NUMERIC};
+	</update>
+	
+	<update id="updateAccountList">
+		BEGIN
+		<foreach collection="list" item="item" separator=";">
+			UPDATE s_account s
+			SET s.account_balance = #{item.accountBalance,jdbcType=NUMERIC},
+				s.update_by = #{item.updateBy,jdbcType=NUMERIC},
+				s.update_date = now()
+			WHERE s.account_id = #{item.accountId,jdbcType=NUMERIC}
+		</foreach>
+		END;
+	</update>
+	
+	<delete id="delAccountByUserId">
+		DELETE FROM s_account 
+		WHERE user_id = #{userId,jdbcType=NUMERIC}
+	</delete>
+	
+	<delete id="delAccountListByUserIds">
+		DELETE FROM s_account 
+		WHERE user_id IN
+		<foreach collection="list" open="(" separator="," close=")">
+		 	#{item,jdbcType=NUMERIC}
+		</foreach>
+	</delete>
+	
+	<select id="findAccountList" resultType="com.zuozuo66.management.entity.Account">
+		SELECT 
+			a.account_id AS accountId,
+			a.account_balance AS accountBalance,
+			a.user_id AS user.id,
+			a.creation_date AS creationDate,
+			a.create_by AS createBy,
+			a.update_date AS updateDate,
+			a.update_by AS updateBy
+		 FROM  s_account a 
+		 <where>
+		 	<if test="accountBalance == 1">
+				AND	a.account_balance &gt;= 0
+		 	</if>
+		 	<if test="accountBalance == -1">
+				AND	a.account_balance &lt; 0
+		 	</if>
+		 </where>
+	<!-- 	 LIMIT #{startIndex,jdbcType=NUMERIC},#{endIndex,jdbcType=NUMERIC} -->
+	</select>
+	
+	<select id="findAccountListCount">
+		SELECT count(1)
+		 FROM  s_account a 
+		 <where>
+		 	<if test="accountBalance == 1">
+				AND	a.account_balance &gt;= 0
+		 	</if>
+		 	<if test="accountBalance == -1">
+				AND	a.account_balance &lt; 0
+		 	</if>
+		 </where>
+	</select>
+	
+	<select id="findAccountListByUserIds" resultType="com.zuozuo66.management.entity.Account">
+		SELECT 
+			a.account_id AS accountId,
+			a.account_balance AS accountBalance,
+			a.user_id AS userId,
+			a.creation_date AS creationDate,
+			a.create_by AS createBy,
+			a.update_date AS updateDate,
+			a.update_by AS updateBy
+		 FROM  s_account a 
+		WHERE a.user_id IN 
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			{item,jdbcType=NUMERIC}
+		</foreach>
+	</select>
+	
+	<select id="findAccountListByUserIdsCount">
+		SELECT count(1)
+		 FROM  s_account a 
+		WHERE a.user_id IN 
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			{item,jdbcType=NUMERIC}
+		</foreach>
+	</select>
+
+</mapper>

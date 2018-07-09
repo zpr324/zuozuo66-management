@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zuozuo66.management.dao.ProductDao" >
+
+ 	<select id="findUserById" resultType="java.util.HashMap">
+ 		SELECT * FROM S_USER WHERE ID = #{id}
+ 	</select>
+ 	
+ 	<insert id="addProduct" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO s_product(
+			product_category,
+			product_name,
+			product_content,
+			product_status,
+			creation_date,
+			update_date)
+		VALUES(
+			#{product.productCategory,jdbcType=VARCHAR},
+			#{product.productName,jdbcType=VARCHAR},
+			#{product.productContent,jdbcType=VARCHAR},
+			#{product.status,jdbcType=NUMERIC},
+			now(),
+			now()	
+		)
+ 	</insert>
+ 	
+ 	<insert id="addProductList" >
+		INSERT INTO s_product(
+			product_category,
+			product_name,
+			product_content,
+			product_status,
+			creation_date,
+			update_date)
+		VALUES
+ 	<foreach collection="list" item="product"  separator=",">
+			(#{product.productCategory,jdbcType=VARCHAR},
+			#{product.productName,jdbcType=VARCHAR},
+			#{product.productContent,jdbcType=VARCHAR},
+			#{product.status,jdbcType=NUMERIC},
+			now(),
+			now()	)
+ 	</foreach>
+ 	</insert>
+ 	
+ 	<update id="updateProduct" parameterType="com.zuozuo66.management.entity.Product">
+		UPDATE s_product
+		SET 
+		<if test="product.productCategory != null">
+			product_category = #{product.productCategory,jdbcType=VARCHAR},
+		</if>
+		<if test="product.productName != null">
+			product_name = #{product.productName,jdbcType=VARCHAR},
+		</if>
+		<if test="product.productContent != null">
+			product_content = #{product.productContent,jdbcType=VARCHAR},
+		</if>
+			update_date = NOW()
+		WHERE id = #{product.id,jdbcType = BIGINT}
+	</update>
+	
+	<update id="delProduct" parameterType="com.zuozuo66.management.entity.Product">
+		UPDATE s_product p
+		SET p.status = 0,
+			p.update_date = NOW()
+		WHERE p.product_id = #{product.id,jdbcType = BIGINT}
+	</update>
+	
+	<select id="findProductList" resultType="com.zuozuo66.management.entity.Product">
+	   SELECT   product_id AS "id",
+				product_category AS "productCategory",
+				product_name AS "productName",
+				product_content AS "productContent"
+		 FROM s_product p
+		WHERE p.status = 1
+	</select>
+	
+	<select id="test" resultType="java.util.HashMap">
+	   SELECT   product_id AS "id",
+				product_category AS "productCategory",
+				product_name AS "productName",
+				product_content AS "productContent"
+		 FROM s_product p
+		WHERE p.product_status = 1
+		<foreach collection="list" item="item" index="i" >
+			<if test="i%2 == 0 and item != null ">
+				<foreach collection="item" item="val">
+				AND	p.product_content LIKE #{val,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			<if test="i%2 == 1 and item != null ">
+				<foreach collection="item" item="val" >
+				AND	p.product_name LIKE #{val,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			<if test="i%2 ==1 and i != list.size()-1">
+				OR
+			</if>
+		</foreach>
+	</select>
+	
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zuozuo66.management.dao.TransactionDao" >
+ <insert id="createTransactionList">
+ 	INSERT INTO s_transaction(
+ 		account_id,
+ 		transaction_amount,
+ 		transaction_type,
+ 		create_by,
+ 		creation_date,
+ 		update_by,
+ 		update_date
+ 	)
+ 	VALUES
+ 	<foreach collection="list" item="item" separator=",">
+ 	(	
+ 		#{item.accountId,jdbcType=NUMERIC},
+ 		#{item.transactionAmount,jdbcType=DECIMAL},
+ 		#{item.transactionType,jdbcType=VARCHAR},
+ 		#{item.createBy,jdbcType=NUMERIC},
+ 		now(),
+ 		#{item.updateBy,jdbcType=NUMERIC},
+ 		now())
+ 	</foreach>
+ </insert>
+ 
+ <select id="findTransactionList">
+ 	SELECT st.transaction_id AS "transactionId",
+ 		   st.transaction_amount AS "transactionAmount",
+ 		   st.transaction_type AS "transactionType",
+ 		   st.creation_date AS "creationDate",
+ 		   su.user_username AS "user.username"
+ 	 FROM s_transaction st
+ 	INNER JOIN s_account sa
+ 	   ON st.account_id = sa.account_id
+ 	INNER JOIN s_user su
+ 	   ON sa.user_id = su.user_id
+ 	 <where>
+ 	 	<if test="user.userId != null">
+ 	 		AND st.account_id =  #{accountId,jdbcType=NUMERIC}
+ 	 	</if>
+ 	 	<if test="transactionType != null and transactionType != ''">
+ 	 		AND st.transaction_type = #{transactionType,jdbcType=VARCHAR} 
+ 	 	</if>
+ 	 	<if test="startDate != null and startDate != ''">
+ 	 		AND st.creation_date &gt; #{startDate,jdbcType=DATE} 
+ 	 	</if>
+ 	 	<if test="endDate != null and endDate != ''">
+ 	 		AND st.creation_date &lt; #{endDate,jdbcType=DATE} 
+ 	 	</if>
+ 	 </where> 
+ 	 ORDER BY st.creation_date DESC
+ </select>
+
+</mapper>
