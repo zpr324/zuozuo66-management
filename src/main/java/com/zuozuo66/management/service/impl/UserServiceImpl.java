@@ -7,6 +7,9 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -25,7 +28,7 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private AccountService accountService;
-
+                                                                               
 	@Override
 	public CommonResult<Integer> login(User user) throws Exception {
 		User loginUser = userDao.login(user);
@@ -55,7 +58,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-//	@Transactional
+	@Transactional()
 	public Integer addUser(User user) throws Exception {
 		User existUser = userDao.findUserByExample(user);
 		if (existUser != null) {
@@ -64,7 +67,7 @@ public class UserServiceImpl implements UserService {
 			userDao.addUser(user);
 			accountService.createAccount(user);
 			return 1;
-		}
+		}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 	}
 
 	@Override

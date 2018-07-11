@@ -12,20 +12,6 @@ import org.springframework.jms.config.JmsListenerContainerFactory;
 @EnableJms
 public class JmsConfig {
 	
-	    public final static String TOPIC = "topic";
-	    
-	    public final static String QUEUE = "queue";
-	    
-//	    @Bean
-//	    public Queue queue() {
-//	        return new ActiveMQQueue(QUEUE);
-//	    }
-//	
-//	    @Bean
-//	    public Topic topic() {
-//	        return new ActiveMQTopic(TOPIC);
-//	    }
-//	
 	    // topic模式的ListenerContainer
 	    @Bean
 	    public JmsListenerContainerFactory<?> jmsListenerContainerTopic(ConnectionFactory activeMQConnectionFactory) {
